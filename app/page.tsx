@@ -27,23 +27,59 @@ import {
     Sun,
     CalendarClock,
 } from "lucide-react";
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import {
+    query,
+    collection,
+    orderBy,
+    onSnapshot,
+    doc,
+} from "firebase/firestore";
 import { firebase_DB } from "@/config/FirebaseConfig";
 
 export default function Home() {
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [data, setData] = useState<any>();
+    const [monitoring, setMonitoring] = useState<any>();
+    const [search, setSearch] = useState<any>();
+    const [filteredData, setFilteredData] = useState<any>();
+
+    const getDailyData = () => {
+        const Ref = collection(firebase_DB, "tabel");
+        const filter = query(Ref, orderBy("no", "desc"));
+        const subs = onSnapshot(filter, (snapshot: { docs: any[] }) => {
+            const data = snapshot.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+            }));
+            setData(data);
+            setFilteredData(data);
+        });
+    };
+    const getDataMonitoring = () => {
+        const Ref = collection(firebase_DB, "monitoring");
+        const Doc = doc(Ref, "data");
+        const subs = onSnapshot(Doc, (snapshot) => {
+            const monitoring: any = snapshot.data();
+            setMonitoring(monitoring);
+        });
+    };
+    const searchbar = () => {
+        let newArray = data.filter((el: any) => {
+            return el.ket.includes(search);
+        });
+        setFilteredData(newArray);
+    };
 
     useEffect(() => {
-        const Ref = collection(firebase_DB, "tabel");
-        const Doc = doc(Ref, "tanggal");
-
-        const subs = onSnapshot(Doc, (snapshot) => {
-            const data: any = snapshot.data();
-            setData(data);
-            console.log(data);
-        });
+        getDailyData();
+        getDataMonitoring();
     }, []);
+
+    useEffect(() => {
+        if (data) {
+            searchbar();
+        }
+    }, [search]);
 
     return (
         <>
@@ -84,9 +120,11 @@ export default function Home() {
                             </CardTitle>
                             <CalendarClock />
                         </CardHeader>
-                        <CardContent className="text-2xl font-bold">
-                            <p className="border-b">5 Oktober 2023</p>
-                            <p>12 : 10 : 01</p>
+                        <CardContent className="text-2xl font-bold text-center">
+                            <p className="border-b py-1">
+                                {monitoring?.tanggal}
+                            </p>
+                            <p className="pt-1">{monitoring?.waktu}</p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -96,8 +134,8 @@ export default function Home() {
                             </CardTitle>
                             <Sun />
                         </CardHeader>
-                        <CardContent className="text-4xl font-bold">
-                            {data?.intensitasCahaya}
+                        <CardContent className="text-4xl font-bold text-center">
+                            {monitoring?.intsCahaya} Lux
                         </CardContent>
                     </Card>
                     <Card>
@@ -107,12 +145,19 @@ export default function Home() {
                             </CardTitle>
                             <BatteryCharging />
                         </CardHeader>
-                        <CardContent className="text-4xl font-bold">
-                            {data?.daya}
+                        <CardContent className="text-4xl font-bold text-center">
+                            {monitoring?.daya} W
                         </CardContent>
                     </Card>
                 </div>
                 <div className="w-[80%] mx-auto border-solid border-2 rounded-md">
+                    <input
+                        type="text"
+                        placeholder={"Search ..."}
+                        className={"input m-2 border-solid border-2 rounded-lg"}
+                        onChange={(event) => setSearch(event.target.value)}
+                        value={search}
+                    />
                     <Table>
                         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
                         <TableHeader>
@@ -135,23 +180,25 @@ export default function Home() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow>
-                                <TableCell className="text-center border-r">
-                                    {data?.no}
-                                </TableCell>
-                                <TableCell className="text-center border-r">
-                                    {data?.waktu}
-                                </TableCell>
-                                <TableCell className="text-center border-r">
-                                    {data?.intensitasCahaya}
-                                </TableCell>
-                                <TableCell className="text-center border-r">
-                                    {data?.daya}
-                                </TableCell>
-                                <TableCell className="text-center ">
-                                    {data?.keterangan}
-                                </TableCell>
-                            </TableRow>
+                            {filteredData?.map((data: any) => (
+                                <TableRow key={data.id}>
+                                    <TableCell className="text-center border-r">
+                                        {data.no}
+                                    </TableCell>
+                                    <TableCell className="text-center border-r">
+                                        {data.waktu}
+                                    </TableCell>
+                                    <TableCell className="text-center border-r">
+                                        {data.intensitasCahaya}
+                                    </TableCell>
+                                    <TableCell className="text-center border-r">
+                                        {data.daya}
+                                    </TableCell>
+                                    <TableCell className="text-center ">
+                                        {data.ket}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </div>

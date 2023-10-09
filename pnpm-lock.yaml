@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@bazhe/pagination-wrapper':
+    specifier: ^1.2.2
+    version: 1.2.2(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-dialog':
     specifier: ^1.0.5
     version: 1.0.5(@types/react-dom@18.2.8)(@types/react@18.2.24)(react-dom@18.2.0)(react@18.2.0)
@@ -99,6 +102,37 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.0
+
+  /@bazhe/pagination-wrapper@1.2.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-aNV6NjwysYkJZNWO3wnFb3LB8hxU+u+sxBQOt+WDK98ufJe663l9AFGOUMIb/L02XFFqdoN3sihpc8FdZGtJRA==}
+    peerDependencies:
+      react: ^16.8.0
+      react-dom: ^16.8.0
+    dependencies:
+      '@bazhe/paginator': 1.2.1
+      '@bazhe/use-pagination': 1.2.1(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      tslib: 2.6.2
+    dev: false
+
+  /@bazhe/paginator@1.2.1:
+    resolution: {integrity: sha512-4S4jd1dDlXDba+BE2hZAJTiaPBW9LDChMlz9YRYjVHSu8q9TDi7OUcnXj3i4oz8RxqAkzRbNEmBKv/kRDeCnwQ==}
+    dependencies:
+      tslib: 2.6.2
+    dev: false
+
+  /@bazhe/use-pagination@1.2.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Tglp3y7cOX3yvolcBK0pEBh4x8xf4vNCjokR/3/hUEt2g53Mdv18LkddBWpOR+8VCRqVEqGze4DsYZqTya+KhA==}
+    peerDependencies:
+      react: '>=16.0.0'
+      react-dom: '>=16.0.0'
+    dependencies:
+      '@bazhe/paginator': 1.2.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      tslib: 2.6.2
+    dev: false
 
   /@eslint-community/eslint-utils@4.4.0(eslint@8.50.0):
     resolution: {integrity: sha512-1/sA4dwrzBAyeUoQ6oxahHKmrZvsnLCg4RfxW3ZFGGmQkSNQPFNLV9CUEFQP1x9EYXHTo5p6xdhZM1Ne9p/AfA==}
