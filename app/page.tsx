@@ -23,11 +23,24 @@ import {
     onSnapshot,
     orderBy,
     query,
+    updateDoc,
     where,
 } from "firebase/firestore";
 import { firebase_DB } from "@/config/FirebaseConfig";
 import { DataTable } from "@/components/data-table";
 import { Logging, columns } from "@/components/colums";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
     const [date, setDate] = useState<Date | undefined>(new Date());
@@ -36,27 +49,51 @@ export default function Home() {
     const [tanggal, setTanggal] = useState<any>();
     const [time, setTime] = useState<any>();
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [trigger, setTrigger] = useState(false);
+
+    const close = async () => {
+        const alertRef = collection(firebase_DB, "popUp");
+        const alertDoc = doc(alertRef, "alertDialog");
+        const payload = {
+            alert : false
+        };
+        
+        await updateDoc(alertDoc, payload);
+    }
+
+    const cleaning = async () => {
+        const alertRef = collection(firebase_DB, "popUp");
+        const alertDoc = doc(alertRef, "alertDialog");
+        const payload = {
+            alert: false,
+            inputAlert: true
+        };
+
+        await updateDoc(alertDoc, payload);
+    };
+
 
     useEffect(() => {
         const Ref = collection(firebase_DB, "tabel");
         const formatDate = selectedDate
             ? format(selectedDate, "d-M-yyyy")
             : format(new Date(), "d-M-yyyy");
-        const filter = query(Ref, where("tanggal", "==", formatDate));
+        const filter = query(Ref, where("tanggal", "==", formatDate), orderBy("waktu", "desc"));
         const subs = onSnapshot(filter, (snapshot) => {
             const data: Logging[] = snapshot.docs.map((doc) => {
                 const docData = doc.data();
                 return {
                     no: docData.no,
                     waktu: docData.waktu,
-                    intensitasCahaya: docData.intensitasCahaya,
+                    intsCahaya: docData.intsCahaya,
                     daya: docData.daya,
                     ket: docData.ket,
                     id: doc.id,
                 };
+                console.log(docData);
             });
             setData(data);
-            console.log(data);
+            
         });
 
         const Ref2 = collection(firebase_DB, "monitoring");
@@ -82,9 +119,18 @@ export default function Home() {
             setTime(formatTime);
         }, 1000);
 
+        const Ref3 = collection(firebase_DB, "popUp");
+        const docs2 = doc(Ref3, "alertDialog");
+        const subs3 = onSnapshot(docs2, (doc) => {
+            const triggerAlert = doc.data();
+            console.log("Alert Dialog from Firestore:", triggerAlert);
+            setTrigger(triggerAlert.alert);
+        });
+
         return () => {
             subs();
             subs2();
+            subs3();
         };
     }, [selectedDate]);
 
@@ -180,6 +226,29 @@ export default function Home() {
                     )}
                 </div>
                 <DataTable columns={columns} data={data || []} />
+                <AlertDialog open={trigger}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle className="text-2xl">
+                                Announcement
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-xl text-justify">
+                                failed cleaning or cloudy weather conditions. If
+                                the weather is cloudy, please ignore this
+                                message, but if the weather is sunny, please
+                                check the solar panel by an officer or re-clean
+                                it because the minimum power limit has not been
+                                reached.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <Button onClick={close}>OK</Button>
+                            <AlertDialogAction onClick={cleaning}>
+                                Cleaning Again
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </>
     );

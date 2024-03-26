@@ -6,66 +6,19 @@ import { ArrowUpDown } from "lucide-react";
 
 export type Logging = {
   id: string;
-  no: number;
   waktu: string;
-  intensitasCahaya: number;
+  intsCahaya: number;
   daya: number;
   ket: string;
 };
 
-// export const Data: Logging[] = [
-//   {
-//     no: 1,
-//     waktu: "2021-10-10 10:10:10",
-//     intensitasCahaya: 100,
-//     daya: 100,
-//     ket: "Normal",
-//   },
-//   {
-//     no: 1,
-//     waktu: "2021-10-10 10:10:10",
-//     intensitasCahaya: 100,
-//     daya: 100,
-//     ket: "Normal",
-//   },
-//   {
-//     no: 1,
-//     waktu: "2021-10-10 10:10:10",
-//     intensitasCahaya: 100,
-//     daya: 100,
-//     ket: "Normal",
-//   },
-//   {
-//     no: 1,
-//     waktu: "2021-10-10 10:10:10",
-//     intensitasCahaya: 100,
-//     daya: 100,
-//     ket: "Normal",
-//   },
-// ];
-
 export const columns: ColumnDef<Logging>[] = [
-    {
-        accessorKey: "no",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                >
-                    No
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-    },
     {
         accessorKey: "waktu",
         header: ({ column }) => {
             return (
                 <Button
+                    className="text-base"
                     variant="ghost"
                     onClick={() =>
                         column.toggleSorting(column.getIsSorted() === "asc")
@@ -78,7 +31,7 @@ export const columns: ColumnDef<Logging>[] = [
         },
     },
     {
-        accessorKey: "intensitasCahaya",
+        accessorKey: "intsCahaya",
         header: "Light Intensity",
     },
     {
@@ -89,4 +42,5 @@ export const columns: ColumnDef<Logging>[] = [
         accessorKey: "ket",
         header: "Information",
     },
+    
 ];

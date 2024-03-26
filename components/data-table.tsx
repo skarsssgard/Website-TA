@@ -31,10 +31,10 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
-  columns,
-  data,
+    columns,
+    data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>([{ id: "waktu", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
@@ -58,24 +58,21 @@ export function DataTable<TData, TValue>({
               <Input
                   placeholder="Search ..."
                   value={
-                      (table.getColumn("ket")?.getFilterValue() as string) ??
-                      ""
+                      (table.getColumn("ket")?.getFilterValue() as string) ?? ""
                   }
                   onChange={(event) =>
-                      table
-                          .getColumn("ket")
-                          ?.setFilterValue(event.target.value)
+                      table.getColumn("ket")?.setFilterValue(event.target.value)
                   }
               />
           </div>
           <Table>
-              <TableHeader>
+              <TableHeader >
                   {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>
                           {headerGroup.headers.map((header) => {
                               return (
                                   <TableHead
-                                      className="text-center"
+                                      className="text-center text-base"
                                       key={header.id}
                                   >
                                       {header.isPlaceholder
@@ -90,7 +87,7 @@ export function DataTable<TData, TValue>({
                       </TableRow>
                   ))}
               </TableHeader>
-              <TableBody className="text-center">
+              <TableBody className="text-center text-base">
                   {table.getRowModel().rows?.length ? (
                       table.getRowModel().rows.map((row) => (
                           <TableRow
